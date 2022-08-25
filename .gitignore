@@ -1,0 +1,14 @@
+.idea/
+*.pyc
+*.psd
+log/
+*.log
+*.pdf
+*.json
+*.sqlite
+*/.pytest_cache/
+jsons/
+*.session
+__pycache__/
+db_data/
+/config/

@@ -1,0 +1,53 @@
+[tool.poetry]
+name = "curriculum-parser"
+version = "1.0.0"
+description = "Curriculum parser from mirea.ru"
+authors = ["Oniel <51058739+0niel@users.noreply.github.com>"]
+
+[tool.poetry.dependencies]
+python = "^3.9"
+requests = "^2.28.0"
+beautifulsoup4 = "^4.11.1"
+camelot-py = "^0.10.1"
+opencv-python = "^4.6.0"
+ghostscript = "^0.7"
+
+[tool.poetry.dev-dependencies]
+mypy = "^0.942"
+black = "^22.3.0"
+isort = "^5.10.1"
+autoflake = "^1.4"
+flake8 = "^4.0.1"
+pytest = "^7.1.2"
+pytest-cov = "^3.0.0"
+
+[tool.black]
+line-length = 88
+target-version = ['py38']
+include = '\.pyi?$'
+exclude = '''
+(
+  /(
+      \.eggs
+    | \.git
+    | \.hg
+    | \.mypy_cache
+    | \.tox
+    | \.venv
+    | _build
+    | buck-out
+    | build
+    | dist
+  )/
+)
+'''
+
+[tool.isort]
+multi_line_output = 3
+include_trailing_comma = true
+force_grid_wrap = 0
+line_length = 88
+
+[build-system]
+requires = ["poetry-core>=1.0.0"]
+build-backend = "poetry.core.masonry.api"
