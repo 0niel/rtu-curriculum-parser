@@ -1,6 +1,7 @@
 import logging
 import os
 from typing import Generator
+from pathlib import Path
 
 import requests
 
@@ -12,6 +13,8 @@ from ._web_parser import get_plans
 from .constants import EducationLevel
 
 logger = logging.getLogger(__name__)
+
+app_dir: Path = Path(__file__).parent
 
 
 def _download_file(url: str, path: str):
