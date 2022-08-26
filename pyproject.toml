@@ -1,6 +1,6 @@
 [tool.poetry]
 name = "curriculum-parser"
-version = "1.0.0"
+version = "1.0.1"
 description = "Curriculum parser from mirea.ru"
 authors = ["Oniel <51058739+0niel@users.noreply.github.com>"]
 

@@ -14,8 +14,6 @@ from .constants import EducationLevel
 
 logger = logging.getLogger(__name__)
 
-app_dir: Path = Path(__file__).parent
-
 
 def _download_file(url: str, path: str):
     with open(path, "wb") as f:
@@ -41,7 +39,8 @@ def parse_plans(
                 or plan_file.education_level == EducationLevel.POSTGRADUATE
             ):
                 continue
-
+            
+            app_dir: Path = Path(__file__).parent
             plan_filename = plan_file.url.split("/")[-1]
             path = "pdf_files\\"
             path = os.path.join(app_dir, path)
