@@ -34,12 +34,12 @@ def parse_plans(
     for plan_file in plan_files:
         try:
             # Because there is a different document format, we ignore it
-            if (
-                plan_file.education_level == EducationLevel.SECONDARY
-                or plan_file.education_level == EducationLevel.POSTGRADUATE
-            ):
+            if plan_file.education_level in [
+                EducationLevel.SECONDARY,
+                EducationLevel.POSTGRADUATE,
+            ]:
                 continue
-            
+
             app_dir: Path = Path(__file__).parent
             plan_filename = plan_file.url.split("/")[-1]
             path = "pdf_files\\"
