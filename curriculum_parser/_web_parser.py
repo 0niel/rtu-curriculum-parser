@@ -1,3 +1,4 @@
+from enum import IntEnum
 import re
 
 import requests
@@ -11,8 +12,7 @@ requests.adapters.DEFAULT_RETRIES = 5
 
 MIREA_URL = "https://www.mirea.ru"
 MIREA_PLANS_URL = MIREA_URL + "/sveden/education/"
-
-PLANS_TABLE_SELECTOR = "table[itemprop='eduOp']"
+CURRICULUM_TABLE_TITLE = "Информация об образовательной программе"
 
 
 def _get_plans_table() -> Tag:
@@ -24,8 +24,17 @@ def _get_plans_table() -> Tag:
         )
 
     soup = BeautifulSoup(response.text, "html.parser")
-    plans_table = soup.select_one(PLANS_TABLE_SELECTOR)
-    return plans_table
+
+    return soup.find("p", text=CURRICULUM_TABLE_TITLE).find_next("table")
+
+
+class _ColumnIndex(IntEnum):
+    CODE = 0
+    NAME = 1
+    EDUCATION_LEVEL = 2
+    PROFILE = 3
+
+    URLS = 6
 
 
 def get_plans() -> list[EducationPlanFile]:
@@ -40,34 +49,28 @@ def get_plans() -> list[EducationPlanFile]:
         if len(cells) < 5:
             continue
 
-        code = cells[0].get_text().strip()
+        code = cells[_ColumnIndex.CODE].get_text().strip()
 
-        # The name and if there is a profile, then it is in parentheses.
-        # For example: Applied Mathematics and Computer Science
-        # (Mathematical Modeling and Computational Mathematics)
-        name = cells[1].text.strip()
-        if "(" in name:
-            name = name[: name.find("(")].strip()
-            # Get value in ( ... ) with regex
-            profile = re.search(r"\((.*)\)", cells[1].text.strip()).group(1).strip()
+        name = cells[_ColumnIndex.NAME].text.strip()
 
-            if "«" in profile:
-                # Get value in « ... » with regex
-                profile = re.search(r"«(.*)»", profile).group(1).strip()
-        else:
-            profile = None
+        profile = cells[_ColumnIndex.PROFILE].text.strip()
+        if "«" in profile:
+            # Get value in « ... » with regex
+            profile = re.search(r"«(.*)»", profile)[1].strip()
 
-        cell_val = cells[2].get_text()
-        education_level = None
-        for key, value in EDUCATION_LEVELS_NAMES.items():
-            if value in cell_val.lower():
-                education_level = key
-                break
-
+        cell_val = cells[_ColumnIndex.EDUCATION_LEVEL].get_text()
+        education_level = next(
+            (
+                key
+                for key, value in EDUCATION_LEVELS_NAMES.items()
+                if value in cell_val.lower()
+            ),
+            None,
+        )
         if education_level is None:
             continue
 
-        urls = cells[5].select("a")
+        urls = cells[_ColumnIndex.URLS].select("a")
         for url in urls:
             href = url.get("href")
             if href is None:
@@ -77,12 +80,18 @@ def get_plans() -> list[EducationPlanFile]:
 
             href = MIREA_URL + href
 
+            try:
+                year = int(href.split("_")[-1].split(".")[0].strip())
+            except ValueError:
+                print(f"Failed to parse year from {href}")
+                continue
+
             plans.append(
                 EducationPlanFile(
                     url=href,
                     code=code,
                     name=name,
-                    year=int(href.split("_")[-1].split(".")[0].strip()),
+                    year=year,
                     education_level=education_level,
                     profile=profile,
                 )

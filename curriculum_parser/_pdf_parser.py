@@ -149,7 +149,7 @@ def parse_pdf(path: str) -> list[EducationPlanDiscipline]:
     tables = camelot.read_pdf(
         path,
         pages="all",
-        suppress_stdout=False,
+        suppress_stdout=True,
     )
 
     table = []
