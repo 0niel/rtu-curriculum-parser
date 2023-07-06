@@ -39,7 +39,7 @@ def parse_plans(
                 or plan_file.education_level == EducationLevel.POSTGRADUATE
             ):
                 continue
-            
+
             app_dir: Path = Path(__file__).parent
             plan_filename = plan_file.url.split("/")[-1]
             path = "pdf_files\\"
@@ -70,9 +70,9 @@ def parse_plans(
             logger.error(str(e))
 
 
-def parse() -> Generator[
-    tuple[EducationPlanFile, list[EducationPlanDiscipline]], None, None
-]:
+def parse() -> (
+    Generator[tuple[EducationPlanFile, list[EducationPlanDiscipline]], None, None]
+):
     """Parse all education plans from the site"""
     plans = get_plans()
 

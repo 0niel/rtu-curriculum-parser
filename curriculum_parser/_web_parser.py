@@ -35,6 +35,7 @@ class _ColumnIndex(IntEnum):
     PROFILE = 3
 
     URLS = 6
+    ANNOTATION_URLS = 7
 
 
 def get_plans() -> list[EducationPlanFile]:
@@ -71,6 +72,24 @@ def get_plans() -> list[EducationPlanFile]:
             continue
 
         urls = cells[_ColumnIndex.URLS].select("a")
+        annot_urls = cells[_ColumnIndex.ANNOTATION_URLS].select("a")
+        annot_urls = [a.get("href") for a in annot_urls]
+        annot_urls = [
+            url for url in annot_urls if url is not None and url.endswith(".pdf")
+        ]
+        annot_urls_by_year = {}
+        for url in annot_urls:
+            try:
+                year = int(url.split("_")[-1].split(".")[0].strip())
+            except ValueError:
+                print(f"Failed to parse year from {url}")
+                continue
+
+            if url.startswith("/upload"):
+                url = MIREA_URL + url
+
+            annot_urls_by_year[year] = url
+
         for url in urls:
             href = url.get("href")
             if href is None:
@@ -89,6 +108,7 @@ def get_plans() -> list[EducationPlanFile]:
             plans.append(
                 EducationPlanFile(
                     url=href,
+                    annot_url=annot_urls_by_year.get(year, None),
                     code=code,
                     name=name,
                     year=year,

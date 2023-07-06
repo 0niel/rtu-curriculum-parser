@@ -11,4 +11,5 @@ class EducationPlanFile:
     name: str
     year: int
     education_level: EducationLevel
+    annot_url: Optional[str] = None
     profile: Optional[str] = None
